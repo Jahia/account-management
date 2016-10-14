@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean name="baseAccountManagementAction"
+          class="org.jahia.modules.account.manangement.actions.BaseAction"
+          abstract="true">
+        <property name="userManagerService" ref="JahiaUserManagerService"/>
+        <property name="mailService" ref="MailService"/>
+    </bean>
+
+    <bean class="org.jahia.modules.account.manangement.actions.RecoverPasswordAction"
+          parent="baseAccountManagementAction">
+        <property name="name" value="forgotPassword"/>
+        <property name="requireAuthenticatedUser"
+                  value="${userregistrationRecoverPasswordRequireAuthenticatedUser:false}"/>
+        <property name="templatePath"
+                  value="${userregistrationRecoverPasswordTemplatePath:/mails/templates/recoveruserpassword.vm}"/>
+        <property name="passwordRecoveryTimeoutSeconds"
+                  value="${userregistrationPasswordRecoveryTimeoutSeconds:0}"/>
+    </bean>
+
+    <bean class="org.jahia.modules.account.manangement.actions.UpdatePasswordAction"
+          parent="baseAccountManagementAction">
+        <property name="name" value="updatePassword"/>
+    </bean>
+
+    <bean class="org.jahia.modules.account.manangement.actions.UpdateProfileAction"
+          parent="baseAccountManagementAction">
+        <property name="name" value="updateProfile"/>
+    </bean>
+
+    <bean class="org.jahia.modules.account.manangement.actions.RegisterAction"
+          parent="baseAccountManagementAction">
+        <property name="name" value="register"/>
+        <property name="requireAuthenticatedUser" value="false"/>
+        <property name="templatePath"
+                  value="${userregistrationUserRegisteredTemplatePath:/mails/templates/userhasregistered.vm}"/>
+    </bean>
+
+    <bean class="org.jahia.modules.account.manangement.actions.UnauthenticatedUpdatePasswordAction"
+          parent="baseAccountManagementAction">
+        <property name="name"
+                  value="unauthenticatedChangePassword"/>
+        <property name="requireAuthenticatedUser"
+                  value="${userregistrationChangePasswordRequireAuthenticatedUser:false}"/>
+    </bean>
+</beans>

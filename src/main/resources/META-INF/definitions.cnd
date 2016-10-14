@@ -1,0 +1,19 @@
+<jdmix = 'http://www.jahia.org/jahiademo/mix/1.0'>
+<jdnt = 'http://www.jahia.org/jahiademo/nt/1.0'>
+<jmix = 'http://www.jahia.org/jahia/mix/1.0'>
+<jnt = 'http://www.jahia.org/jahia/nt/1.0'>
+<mix = 'http://www.jcp.org/jcr/mix/1.0'>
+
+[jdmix:pageRedirect] mixin
+ - redirectPage (weakreference)
+
+[jdnt:register] > jnt:content, jdmix:accountComponents, jdmix:pageRedirect, mix:title
+
+[jdnt:updatePassword] > jnt:content, jdmix:accountComponents, jdmix:pageRedirect, mix:title
+
+[jdnt:forgotPassword] > jnt:content, jdmix:accountComponents, jdmix:pageRedirect, mix:title
+
+[jdnt:editProfile] > jnt:content, jdmix:accountComponents, jdmix:pageRedirect, mix:title
+
+[jdmix:accountComponents] > jmix:droppableContent mixin
+
