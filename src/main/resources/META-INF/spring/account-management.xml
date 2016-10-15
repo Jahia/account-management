@@ -31,6 +31,12 @@
         <property name="name" value="updateProfile"/>
     </bean>
 
+    <bean class="org.jahia.modules.account.manangement.actions.UnauthenticatedChangePasswordAction"
+          parent="baseAccountManagementAction">
+        <property name="name" value="unauthenticatedChangePassword"/>
+        <property name="requireAuthenticatedUser" value="false"/>
+    </bean>
+
     <bean class="org.jahia.modules.account.manangement.actions.RegisterAction"
           parent="baseAccountManagementAction">
         <property name="name" value="register"/>
@@ -39,7 +45,7 @@
                   value="${userregistrationUserRegisteredTemplatePath:/mails/templates/userhasregistered.vm}"/>
     </bean>
 
-    <bean class="org.jahia.modules.account.manangement.actions.UnauthenticatedUpdatePasswordAction"
+    <bean class="org.jahia.modules.account.manangement.actions.UnauthenticatedChangePasswordAction"
           parent="baseAccountManagementAction">
         <property name="name"
                   value="unauthenticatedChangePassword"/>

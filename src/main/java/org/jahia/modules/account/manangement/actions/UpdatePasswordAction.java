@@ -42,23 +42,24 @@ public class UpdatePasswordAction extends BaseAction {
                                   final JCRSessionWrapper session,
                                   final Map<String, List<String>> parameters,
                                   final URLResolver urlResolver) throws Exception {
-        final String passwd = request.getParameter("password").trim();
+        final String password = request.getParameter("password").trim();
         final JSONObject json = new JSONObject();
-        if ("".equals(passwd)) {
+        if ("".equals(password)) {
             final String userMessage = Messages.get("resources.account-management",
                     "account.errors.password.mandatory", renderContext.getUILocale());
             json.put("errorMessage", userMessage);
             json.put("focusField", "password");
         } else {
-            final String passwdConfirm = request.getParameter("confirmPassword").trim();
-            if (!passwdConfirm.equals(passwd)) {
+            final String confirmPassword = request.getParameter("confirmPassword").trim();
+            if (!confirmPassword.equals(password)) {
                 final String userMessage = Messages.get("resources.account-management",
                         "account.errors.password.not.matching", renderContext.getUILocale());
                 json.put("errorMessage", userMessage);
                 json.put("focusField", "password");
             } else {
                 final String oldPassword = request.getParameter("oldPassword").trim();
-                final JCRUserNode user = getUserManagerService().lookupUser(renderContext.getUser().getUsername());
+                final JCRUserNode user = getUserManagerService()
+                        .lookupUser(renderContext.getUser().getUsername(), session);
                 if (!user.verifyPassword(oldPassword)) {
                     final String userMessage = Messages.get("resources.account-management",
                             "account.errors.oldPassword.matching", renderContext.getUILocale());
@@ -68,7 +69,7 @@ public class UpdatePasswordAction extends BaseAction {
                     final JahiaPasswordPolicyService pwdPolicyService = ServicesRegistry.getInstance()
                             .getJahiaPasswordPolicyService();
                     final PolicyEnforcementResult evalResult = pwdPolicyService
-                            .enforcePolicyOnPasswordChange(user, passwd, true);
+                            .enforcePolicyOnPasswordChange(user, password, true);
                     if (!evalResult.isSuccess()) {
                         final EngineMessages policyMsgs = evalResult.getEngineMessages();
                         final StringBuilder res = new StringBuilder();
@@ -78,10 +79,8 @@ public class UpdatePasswordAction extends BaseAction {
                         }
                         json.put("errorMessage", res.toString());
                     } else {
-                        // change password
-                        //TODO: Look at why the password is not getting updated.
-                        user.setPassword(passwd);
-                        user.saveSession();
+                        user.setPassword(password);
+                        session.save();
                         json.put("errorMessage", Messages.get("resources.account-management",
                                 "account.passwordChanged", renderContext.getUILocale()));
                         json.put("result", "success");
@@ -89,6 +88,6 @@ public class UpdatePasswordAction extends BaseAction {
                 }
             }
         }
-        return new ActionResult(HttpServletResponse.SC_OK, getParameter(parameters, "redirectPage"), json);
+        return new ActionResult(HttpServletResponse.SC_OK, null, json);
     }
 }

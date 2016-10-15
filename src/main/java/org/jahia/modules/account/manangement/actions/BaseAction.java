@@ -72,7 +72,7 @@ public abstract class BaseAction extends Action {
      */
     protected String getI18nMessage(final String key,
                                     final Locale locale) {
-        return Messages.get("resources.Account-Management", key, locale);
+        return Messages.get("resources.account-management", key, locale);
     }
 
     public MailService getMailService() {
