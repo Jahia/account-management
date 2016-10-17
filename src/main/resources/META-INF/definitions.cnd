@@ -12,8 +12,11 @@
 [jdnt:updatePassword] > jnt:content, jdmix:accountComponents, jdmix:pageRedirect, mix:title
 
 [jdnt:forgotPassword] > jnt:content, jdmix:accountComponents, jdmix:pageRedirect, mix:title
+ - updatePasswordPage (weakreference)
 
 [jdnt:editProfile] > jnt:content, jdmix:accountComponents, jdmix:pageRedirect, mix:title
 
 [jdmix:accountComponents] > jmix:droppableContent mixin
+
+[jdnt:unauthenticatedChangePassword] > jnt:content, jdmix:accountComponents, jdmix:pageRedirect, mix:title
 

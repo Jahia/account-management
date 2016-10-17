@@ -17,11 +17,32 @@
 <%--@elvariable id="renderContext" type="org.jahia.services.render.RenderContext"--%>
 <%--@elvariable id="currentResource" type="org.jahia.services.render.Resource"--%>
 <%--@elvariable id="url" type="org.jahia.services.render.URLGenerator"--%>
-<form action="${url.baseLive}${currentNode.path}.forgotPassword.do" method="post">
-  <input type="hidden" name="redirectPage" value="${currentNode.properties['redirectPage'].node.path}"/>
-  <div class="form-group">
-    <label for="emailInput"><fmt:message key="form.input.email.address"/></label>
-    <input type="email" name="email" class="form-control" id="emailInput" placeholder="john.smith@mail.com">
-  </div>
-  <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+<template:addResources type="javascript" resources="jquery.min.js"/>
+<template:addResources>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $("#forgotPassword_${currentNode.identifier}").submit(function(event) {
+        event.preventDefault();
+        var $form = $(this);
+        var url = $form.attr('action');
+        $.post(url, $form.serializeArray(),
+            function(data) {
+              $("#${currentNode.identifier}").html(data['message']);
+            }, "json");
+      });
+    });
+  </script>
+</template:addResources>
+<div id="${currentNode.identifier}">
+  <template:tokenizedForm>
+    <form id="forgotPassword_${currentNode.identifier}"
+          action="${url.baseLive}${currentNode.path}.forgotPassword.do"
+          method="post">
+      <div class="form-group">
+        <label for="usernameInput_${currentNode.identifier}"><fmt:message key="form.input.username"/></label>
+        <input type="text" name="username" class="form-control" id="usernameInput_${currentNode.identifier}" placeholder="john.smith">
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  </template:tokenizedForm>
+</div>

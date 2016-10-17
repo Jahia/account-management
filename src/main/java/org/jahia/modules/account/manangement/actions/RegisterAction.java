@@ -60,6 +60,7 @@ public class RegisterAction extends BaseAction {
                     "account.errors.password.not.matching", renderContext.getUILocale());
             json.put("errorMessage", userMessage);
             json.put("focusField", "password");
+            return new ActionResult(HttpServletResponse.SC_ACCEPTED, null, json);
         }
 
         final Properties properties = new Properties();
@@ -80,6 +81,7 @@ public class RegisterAction extends BaseAction {
             public Boolean doInJCR(final JCRSessionWrapper s) throws RepositoryException {
                 final JCRUserNode user = getUserManagerService().createUser(username, password, properties, s);
                 s.save();
+
                 if (getMailService().isEnabled()) {
                     // Prepare mail to be sent :
                     final boolean toAdministratorMail = Boolean.valueOf(getParameter(parameters,
@@ -103,8 +105,7 @@ public class RegisterAction extends BaseAction {
                 return true;
             }
         });
-
-        return new ActionResult(HttpServletResponse.SC_ACCEPTED, getParameter(parameters,
-                "redirectPage"), new JSONObject());
+        json.put("result", "success");
+        return new ActionResult(HttpServletResponse.SC_ACCEPTED, null, json);
     }
 }

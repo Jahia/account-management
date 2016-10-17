@@ -16,6 +16,8 @@ import org.jahia.services.usermanager.JahiaUserManagerService;
 import org.jahia.utils.Url;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jcr.RepositoryException;
 import javax.servlet.http.HttpServletRequest;
@@ -32,7 +34,7 @@ import static javax.servlet.http.HttpServletResponse.SC_OK;
  * Created by smomin on 10/13/16.
  */
 public class RecoverPasswordAction extends BaseAction {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(RecoverPasswordAction.class);
     protected static final String PROPERTY_PASSWORD_RECOVERY_TOKEN = "j:passwordRecoveryToken";
     protected static final String SESSION_ATTRIBUTE_PASSWORD_RECOVERY_ASKED = "passwordRecoveryAsked";
 
@@ -107,18 +109,22 @@ public class RecoverPasswordAction extends BaseAction {
         final String from = getMailService().getSettings().getFrom();
         final String token = generateToken(user, passwordRecoveryTimeoutSeconds > 0 ? passwordRecoveryTimeoutSeconds
                 : request.getSession().getMaxInactiveInterval());
-
         final Map<String, Object> bindings = new HashMap<String, Object>();
-        bindings.put("link", Url.getServer(request)
+        final String link = Url.getServer(request)
                 + Jahia.getContextPath()
                 + Render.getRenderServletPath()
                 + "/live/"
                 + resource.getLocale().getLanguage()
-                + resource.getNode().getPath()
-                + ".html?key=" + token);
+                + resource.getNode().getProperty("updatePasswordPage").getNode().getPath()
+                + ".html?key=" + token;
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("link", link);
+        }
+        bindings.put("link", link);
         bindings.put("user", user);
 
-        getMailService().sendMessageWithTemplate(getTemplatePath(), bindings, to, from, null, null, resource.getLocale(), "Account Management");
+        getMailService().sendMessageWithTemplate(getTemplatePath(), bindings, to, from,
+                null, null, resource.getLocale(), "Account Management");
         request.getSession().setAttribute(SESSION_ATTRIBUTE_PASSWORD_RECOVERY_ASKED, true);
 
         return result(SC_ACCEPTED, "passwordrecovery.mail.sent", locale);
@@ -141,11 +147,13 @@ public class RecoverPasswordAction extends BaseAction {
     }
 
     /**
-     * Set the timeout in seconds, after which the password reset token expires. If a positive non-zero value is provided here, it will be
-     * used. Otherwise, a current value of the HTTP session timeout will be used for expiration.
+     * Set the timeout in seconds, after which the password reset token expires. If a positive non-zero value
+     * is provided here, it will be used. Otherwise, a current value of the HTTP session timeout will be used
+     * for expiration.
      *
-     * @param passwordRecoveryTimeoutSeconds the timeout in seconds, after which the password reset token expires. If a positive value is provided here, it will be
-     *                                       used. Otherwise, a current value of the HTTP session timeout will be used for expiration
+     * @param passwordRecoveryTimeoutSeconds the timeout in seconds, after which the password reset token expires.
+     *                                       If a positive value is provided here, it will be used. Otherwise, a
+     *                                       current value of the HTTP session timeout will be used for expiration
      */
     public void setPasswordRecoveryTimeoutSeconds(final int passwordRecoveryTimeoutSeconds) {
         this.passwordRecoveryTimeoutSeconds = passwordRecoveryTimeoutSeconds;
